@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fooddelivery/Model/Product.dart';
-import 'package:fooddelivery/Home/FoodOrder/OrderFood.dart';
+//import 'package:fooddelivery/Home/FoodOrder/OrderFood.dart';
+//import 'package:carousel_pro/carousel_pro.dart';
+import 'package:fooddelivery/Home/ResturantList.dart';
 
 class Food extends StatefulWidget {
   final String value;
@@ -13,9 +15,29 @@ class FoodPageState extends State<Food> {
 
 final List<Product> _allFood = Product.allCities();
 
-
 @override
 Widget build(BuildContext context) {
+  
+/*Widget image_carousel = new Container(
+    height: 200.0,
+    child:  new Carousel(
+      boxFit: BoxFit.cover,
+      images: [
+        AssetImage('assets/images/menu1.png'),
+        AssetImage('assets/images/menu2.png'),
+        AssetImage('assets/images/menu3.png'),
+        AssetImage('assets/images/menu4.png'),
+        AssetImage('assets/images/menu5.png'),
+      ],
+      autoplay: true,
+    animationCurve: Curves.fastOutSlowIn,
+    animationDuration: Duration(milliseconds: 1000),
+      dotSize: 4.0,
+      indicatorBgPadding: 2.0,
+    ),
+  );*/
+
+
   return new Scaffold(
       appBar: new AppBar(
         title: new Text(
@@ -40,23 +62,34 @@ Widget build(BuildContext context) {
       ),
       body: new Padding(
           padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-          child: getHomePageBody(context)));
+          child: getHomePageBody(context))
+       );
+   
 }
 
 getHomePageBody(BuildContext context) {
   return ListView.builder(
+    
+ 
+    //image carousel begins here
+  //  image_carousel,
+
     itemCount: _allFood.length,
     itemBuilder: _getItemUI,
     padding: EdgeInsets.all(0.0),
-  );
+    
+    );
 }
   // First Attempt
    Widget _getItemUI(BuildContext context, int index) {
     return new Card(
-        child: new Column(
+     child: new Column(
 
       children: <Widget>[
+      
         new ListTile(
+     
+
           leading: new Image.asset(
             "assets/Restaurants/" + _allFood[index].imageName,
             fit: BoxFit.cover,
@@ -121,7 +154,7 @@ getHomePageBody(BuildContext context) {
 
    Navigator.push(
         context,
-        new MaterialPageRoute(builder: (context) => new OrderFood(value:item.name,)),
+        new MaterialPageRoute(builder: (context) => new ResturantList(title: item.name,)),
    );
 
   }

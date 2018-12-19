@@ -13,6 +13,12 @@ dependencies:
   cupertino_icons: ^0.1.0
   fluro: 
   fluttertoast: 
+  carousel_pro: ^0.0.13
+  scoped_model:
+  firebase_auth:
+  firebase_database:
+  
+
 
 
 dev_dependencies:

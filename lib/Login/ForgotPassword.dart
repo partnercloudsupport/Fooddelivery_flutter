@@ -50,7 +50,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+  
     return new Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(

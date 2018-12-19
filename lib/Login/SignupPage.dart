@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:fooddelivery/Login/auth.dart';
+import 'package:fooddelivery/Home/HomePage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SignupPage extends StatefulWidget {
+ SignupPage({this.auth, this.onSignup});
+  final AuthImpl auth;
+  final VoidCallback onSignup;
+
   @override
   State createState() => new SignupPageState();
 }
+
+enum FormMode { SIGNIN, SIGNUP }
 
 class SignupPageState extends State<SignupPage>  {
   // Create a text controller. We will use it to retrieve the current value
@@ -17,31 +26,46 @@ class SignupPageState extends State<SignupPage>  {
   String _email;
   String _password;
   String _name;
+  FormMode _formMode = FormMode.SIGNUP;
 
-  void _submit() {
+
+   bool validateAndSave() {
     final form = formKey.currentState;
-
     if (form.validate()) {
       form.save();
+      return true;
+    }
+    return false;
+  }
 
-      // Email & password matched our validation rules
-      // and are saved to _email and _password fields.
-      _performLogin();
+  void validateAndSubmit() async {
+    if (validateAndSave()) {
+      try {
+        if (_formMode == FormMode.SIGNUP)  {
+          String userId = await widget.auth.signUp(_email, _password,_name);
+          print('Signed up user: $userId');
+         if (userId.length != 0) {
+           Navigator.push(
+             context,
+              new MaterialPageRoute(builder: (context) => new HomePage(value:_email,)),
+             );
+          }
+        }
+        widget.onSignup();
+      } catch (error) {
+        print('Error: $error');
+        Fluttertoast.showToast(
+        msg: "Login Failed. Check your info.$error",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIos: 1,
+       );
+      }
     }
   }
 
-  void _performLogin() {
-    // This is just a demo, so no actual login here.
-    final snackbar = new SnackBar(
-      content: new Text('Email: $_email, password: $_password,Name: $_name '),
-    );
 
-    if (scaffoldKey.currentState == null) {
-      print("Success Signup");
-    } else {
-      scaffoldKey.currentState.showSnackBar(snackbar);
-    }
-  }
+ 
 
   @override
   void dispose() {
@@ -54,7 +78,7 @@ class SignupPageState extends State<SignupPage>  {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    
     return new Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -80,14 +104,11 @@ class SignupPageState extends State<SignupPage>  {
                 image: new AssetImage('assets/Food-Truck.png'),
                 height: 180.0,
                 width: 200.0,
-             
-              ),
+             ),
               new Padding(padding: new EdgeInsets.all(10.0)),
               new Text(
                 'Welcome on board!', style: new TextStyle(color: Colors.white,fontSize: 18.0),
               ),
-
-
               new Form(
                   key: formKey,
                   child: new Theme(
@@ -133,13 +154,13 @@ class SignupPageState extends State<SignupPage>  {
                             onSaved: (val) => _password = val,
                           ),
                                             
-                          new Padding(
+                         new Padding(
                               padding: const EdgeInsets.only(top: 25.0)),
                          ButtonTheme (
                             minWidth:200.0,
                             height:50.0,
                             child:RaisedButton(
-                            onPressed: _submit,
+                            onPressed: validateAndSubmit,
                             child: new Text('Sing Up'),
                             ),),
                           new Padding(

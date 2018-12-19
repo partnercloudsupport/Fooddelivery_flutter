@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:fooddelivery/Login/LoginPage.dart';
 import 'package:fooddelivery/Home/Food.dart';
+import 'package:fooddelivery/Login/auth.dart';
 
 
 class HomePage extends StatefulWidget {
   final String value;
-  HomePage({Key key, this.value}) : super(key: key);
+  final AuthImpl auth;
+  final VoidCallback onSignedOut;
+  HomePage({Key key, this.value, this.auth, this.onSignedOut}) : super(key: key);
+
   @override
   State createState() => new HomePageState();
 }
@@ -16,11 +19,23 @@ List<String> name = ['Food','Grocery','Milk','Cab','House Work','Customer Care',
 List<String> imageList = ['assets/GridIcon/Food_Icon.png','assets/GridIcon/Grocery_Icon.png','assets/GridIcon/Milk_Icon.png'
 ,'assets/GridIcon/Taxi_Icon.jpg','assets/GridIcon/Home_work.jpg','assets/GridIcon/Customer Care.png'];
 
+ void _signOut() async {
+    try {
+      await widget.auth.signOut();
+      widget.onSignedOut();
+    //   Navigator.of(context).push(
+    //     new MaterialPageRoute(
+    //     builder: (BuildContext context) => new LoginPage(),
+    //    ));
+    } catch (e) {
+      print(e);
+     }
+  }
 
   @override
-  initState() {
-    super.initState();
-  }
+initState() {
+  super.initState();
+}
 
 _showSnackBar(BuildContext context,String selectedName) {
   Navigator.push(
@@ -28,7 +43,7 @@ _showSnackBar(BuildContext context,String selectedName) {
         new MaterialPageRoute(builder: (context) => new Food(value:selectedName,)),
       );
 }
-  // TODO: Make a collection of cards (102)
+  
 List<Card> _buildGridCards(List<String> name,List<String> listOfImage) {
   List<Card> cards = List.generate(
     
@@ -72,33 +87,20 @@ List<Card> _buildGridCards(List<String> name,List<String> listOfImage) {
   Widget build(BuildContext context) {
 
     // double screenHeight = MediaQuery.of(context).size.height;
-    // TODO: implement build
+   
     return new MaterialApp(
       debugShowCheckedModeBanner: false,
       home: new Scaffold(
           appBar: AppBar(
-                    // our appbar title.
-          title: new Center(child: new Text("Home")),
-          actions: <Widget>[
-          new IconButton(
-            icon: new Icon(
-              Icons.search,
-              semanticLabel: 'search',
-            ),
-            onPressed: () {
-              print('Search button');
-            },
-          ),
-         
-          ],
+          // our appbar title.
+          title: new Center(child: new Text("Home")),       
           ),
           drawer: new Drawer(
               child: new ListView(
             children: <Widget>[
-              
               new UserAccountsDrawerHeader(
                 accountName: new Text("Anand"),
-                accountEmail: new Text("${widget.value}"),
+                accountEmail: new Text(widget.value != null?widget.value:"anand@gmail.com"),
                 currentAccountPicture: new CircleAvatar(
                     backgroundColor: Colors.grey, child: new Text("A", style: new TextStyle(
               fontSize: 18.0,
@@ -106,33 +108,29 @@ List<Card> _buildGridCards(List<String> name,List<String> listOfImage) {
               color: Colors.white),)),
               ),
               new ListTile(
-                  title: new Text("Menu"),
-                  trailing: new Icon(Icons.map),
+                  title: new Text("Orders"),
+                  trailing: new Icon(Icons.list),
                   onTap: () =>
                   print("Map Icon tap")
                   ),
               new Divider(),
               new ListTile(
-                title: new Text("Orders"),
-                trailing: new Icon(Icons.account_balance),
+                title: new Text("Settngs"),
+                trailing: new Icon(Icons.settings),
               ),
               new Divider(),
               new ListTile(
                 title: new Text("Logout"),
                 trailing: new Icon(Icons.close),
-                onTap: () => Navigator.of(context).push(
-                      new MaterialPageRoute(
-                        builder: (BuildContext context) => new LoginPage(),
-                      ),
-                    ),
+                onTap: _signOut,
               ),
             ],
           )),
           body: new GestureDetector(
-                   onTap: () {
-                    // print("detail");
-                    _showSnackBar(context,"Food");
-                },
+               onTap: () {
+           
+             _showSnackBar(context,"Food");
+         },
                    
          child: GridView.count(
                 crossAxisCount: 2,

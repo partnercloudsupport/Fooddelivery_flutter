@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:fooddelivery/Login/LoginPage.dart';
+import 'package:fooddelivery/Login/auth.dart';
+import 'package:fooddelivery/root_page.dart';
 
 var apiKey = "AIzaSyAqxqnsuGk6EdkLEgsNrDmqzlJtH-dFnaY";
 
@@ -26,14 +27,13 @@ class _SplashScreenState extends State<SplashScreen>  {
   super.initState();
   const twentyMillis = const Duration(milliseconds:3600);
   new Timer(twentyMillis, () => 
-      Navigator.of(context).push(
-                new MaterialPageRoute(
-                  builder: (BuildContext context) => new LoginPage(),
-                ),
-            ),
+    Navigator.of(context).push(
+      new MaterialPageRoute(
+        builder: (BuildContext context) => new RootPage(auth: new Auth()),
+         ),
+      ),
     );
-
-  }
+}
 
   @override
   Widget build(BuildContext context) {

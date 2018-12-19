@@ -2,11 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:fooddelivery/Login/ForgotPassword.dart';
 import 'package:fooddelivery/Login/SignupPage.dart';
 import 'package:fooddelivery/Home/HomePage.dart';
+import 'package:fooddelivery/Login/auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
+
+  LoginPage({this.auth, this.onSignedIn});
+
+  final AuthImpl auth;
+  final VoidCallback onSignedIn;
+
   @override
   State createState() => new LoginPageState();
 }
+
+enum FormMode { SIGNIN, SIGNUP }
 
 class LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
@@ -20,37 +30,76 @@ class LoginPageState extends State<LoginPage>
   final formKey = new GlobalKey<FormState>();
   String _email;
   String _password;
+  FormMode _formMode = FormMode.SIGNIN;
 
-  void _submit() {
+  
+  bool validateAndSave() {
     final form = formKey.currentState;
-
     if (form.validate()) {
       form.save();
-
-      // Email & password matched our validation rules
-      // and are saved to _email and _password fields.
-      _performLogin();
+      return true;
     }
+    return false;
   }
 
-  void _performLogin() {
-    // This is just a demo, so no actual login here.
-    final snackbar = new SnackBar(
-      content: new Text('Email: $_email, password: $_password'),
-    );
-
-    if (scaffoldKey.currentState == null) {
-      print("Success");
-      Navigator.push(
-        context,
-        new MaterialPageRoute(builder: (context) => new HomePage(value:_email,)),
-      );
-    } else {
-      scaffoldKey.currentState.showSnackBar(snackbar);
-    }
+  void validateAndSubmit() async {
+    if (validateAndSave()) {
+      try {
+        if (_formMode == FormMode.SIGNIN) {
+          String userId = await widget.auth.signIn(_email, _password);
+          print('Signed in: $userId');
+          if (userId.length != 0) {
+           Navigator.push(
+             context,
+              new MaterialPageRoute(builder: (context) => new HomePage(value:_email,)),
+             );
+          }
+        } 
+        widget.onSignedIn();
+      } catch (error) {
+         Fluttertoast.showToast(
+        msg: "Login Failed. Check your info.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 1,
+       );
+       // print('Error: $error,email$_email');
+      }
+    } 
   }
 
-  @override
+
+  // void _submit() {
+  //   final form = formKey.currentState;
+
+  //   if (form.validate()) {
+  //     form.save();
+
+  //     // Email & password matched our validation rules
+  //     // and are saved to _email and _password fields.
+  //     _performLogin();
+  //   }
+  // }
+
+  // void _performLogin() {
+  //   // This is just a demo, so no actual login here.
+  //   final snackbar = new SnackBar(
+  //     content: new Text('Email: $_email, password: $_password'),
+  //   );
+
+  //   if (scaffoldKey.currentState == null) {
+  //     print("Success");
+  //     Navigator.push(
+  //       context,
+  //       new MaterialPageRoute(builder: (context) => new HomePage(value:_email,)),
+  //     );
+  //   } else {
+  //     scaffoldKey.currentState.showSnackBar(snackbar);
+  //   }
+  // }
+
+
+ @override
   void dispose() {
     // Clean up the controller when the Widget is disposed
     super.dispose();
@@ -60,7 +109,7 @@ class LoginPageState extends State<LoginPage>
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+ 
     return new Scaffold(
       backgroundColor: Colors.black,
       body: new Stack(
@@ -143,7 +192,7 @@ class LoginPageState extends State<LoginPage>
                             minWidth:200.0,
                             height:50.0,
                             child:RaisedButton(
-                            onPressed: _submit,
+                            onPressed: validateAndSubmit,
                             child: new Text('Log In'),
                             ),),
                           new Padding(
@@ -159,7 +208,7 @@ class LoginPageState extends State<LoginPage>
                                 Navigator.push(
                                   context,
                                   new MaterialPageRoute(
-                                      builder: (context) => new SignupPage()),
+                                      builder: (context) => new SignupPage(auth: new Auth(),)),
                                 );
                               },
                               splashColor: Colors.teal,
