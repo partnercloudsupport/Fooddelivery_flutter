@@ -5,7 +5,6 @@ import 'package:fooddelivery/Home/cart_button.dart';
 import 'package:fooddelivery/Home/reviewCart.dart';
 
 
-
 class ResturantList extends StatefulWidget {
   ResturantList({Key key, this.title}) : super(key: key);
 
@@ -267,7 +266,7 @@ void subtractNumbers() {
                                     ],
                                   )),
                               new IconButton(
-                                  icon: Icon(Icons.shopping_cart),
+                                  icon: Icon(Icons.add_to_queue),
                                   // tooltip: 'Increase volume by 10%',
                                    onPressed: () { 
                                     _showSnackBar(context, _allFood[index]);
