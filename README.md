@@ -2,7 +2,7 @@
 
 A new Flutter project.
 
-## Getting Started
+fooddelivery One - India's One App 
+Food, Cabs,Grocery, Medicine,Party Halls, Latest News all in one app.
 
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
+
